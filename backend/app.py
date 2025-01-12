@@ -15,8 +15,8 @@ class Chat(db.Model):
     agent_response = db.Column(db.Text, nullable=False)
 
 # Load API keys (upload later)
-openai.api_key = "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"  # Replace with your API key
-Entrez.email = "chayyalavarthi@gmail.com"  # Replace with your email
+openai.api_key = ""  # Replace with your API key
+Entrez.email = ""  # Replace with your email
 
 # Function to query PubMed
 def query_pubmed(query, max_results=5):
