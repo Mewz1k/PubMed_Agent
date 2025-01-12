@@ -1,0 +1,16 @@
+PubMed_Agent/
+│
+├── backend/
+│   ├── app.py            # Flask backend
+│   ├── requirements.txt  # Python dependencies
+│   ├── chats.db          # SQLite database (auto-created on the first run)
+│
+├── frontend/
+│   ├── public/
+│   │   ├── index.html    # Main HTML file
+│   └── src/
+│       ├── App.js        # Main React application
+│       ├── index.js      # Entry point for React
+│       └── App.css       # Styling for the chat UI
+│
+└── README.md             # Instructions for setting up and running
