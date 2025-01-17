@@ -2,8 +2,9 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from Bio import Entrez
 import openai
+import os
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chats.db'
 db = SQLAlchemy(app)
 
@@ -14,9 +15,9 @@ class Chat(db.Model):
     user_message = db.Column(db.Text, nullable=False)
     agent_response = db.Column(db.Text, nullable=False)
 
-# Load API keys (upload later)
-openai.api_key = ""  # Replace with your API key
-Entrez.email = ""  # Replace with your email
+# Load API keys from Codespaces secrets
+openai.api_key = os.getenv("OPENAI_API_KEY")
+Entrez.email = os.getenv("ENTREZ_EMAIL")
 
 # Function to query PubMed
 def query_pubmed(query, max_results=5):
@@ -42,6 +43,23 @@ def query_pubmed(query, max_results=5):
     except Exception as e:
         return {"error": str(e)}
 
+# Function to summarize articles using OpenAI
+def summarize_articles(articles):
+    prompt = "Summarize the following articles:\n"
+    for article in articles:
+        prompt += f"- {article['Title']} ({article['PubDate']})\n"
+    
+    try:
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            max_tokens=100,
+            temperature=0.7,
+        )
+        return response.choices[0].text.strip()
+    except Exception as e:
+        return f"Error summarizing articles: {e}"
+
 # API endpoint to handle user queries
 @app.route('/query', methods=['POST'])
 def query():
@@ -52,8 +70,8 @@ def query():
     # Query PubMed
     articles = query_pubmed(query)
 
-    # Use OpenAI GPT to summarize articles (mock example here)
-    response_summary = f"Summarized response for query: {query}"
+    # Summarize articles
+    response_summary = summarize_articles(articles)
     
     # Save the chat to the database
     new_chat = Chat(project_name=project_name, user_message=query, agent_response=response_summary)
@@ -70,5 +88,6 @@ def get_chats():
     return jsonify([{"user_message": chat.user_message, "agent_response": chat.agent_response} for chat in chats])
 
 if __name__ == '__main__':
-    db.create_all()  # Create the database if it doesn't exist
+    with app.app_context():
+        db.create_all()  # Create the database if it doesn't exist
     app.run(debug=True)
