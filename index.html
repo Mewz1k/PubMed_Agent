@@ -1,11 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PubMed Agent</title>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+</head>
+<body>
+    <h1>PubMed Agent</h1>
+    <form id="queryForm">
+        <label for="query">Enter your query:</label>
+        <input type="text" id="query" name="query" required />
+        <button type="submit">Search</button>
+    </form>
+    <div id="results"></div>
+
+    <script>
+        document.getElementById('queryForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const query = document.getElementById('query').value;
+            const response = await fetch('http://localhost:5000/query', {  // Replace with your backend URL
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: query })
+            });
+            const data = await response.json();
+            document.getElementById('results').innerHTML = JSON.stringify(data.articles, null, 2);
+        });
+    </script>
+</body>
 </html>
