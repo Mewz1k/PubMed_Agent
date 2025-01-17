@@ -119,6 +119,7 @@ def get_chats():
         return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
 
 if __name__ == '__main__':
+    # Initialize database and run the app
     with app.app_context():
         db.create_all()  # Create the database if it doesn't exist
     app.run(debug=True)
