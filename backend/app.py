@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from Bio import Entrez
 import openai
 
-app = Flask(Research Agent)
+app = Flask(_name_)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chats.db'
 db = SQLAlchemy(app)
 
